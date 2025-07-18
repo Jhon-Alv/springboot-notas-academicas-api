@@ -1,0 +1,21 @@
+
+services:
+
+  notas-mysql-container:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: notas_academicas
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-padmin" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    ports:
+      - "3306:3306"
+    volumes:
+      - notas_data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  notas_data:
