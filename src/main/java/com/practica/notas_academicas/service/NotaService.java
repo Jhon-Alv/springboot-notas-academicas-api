@@ -62,7 +62,7 @@ public class NotaService {
         return NotaMapper.toDetalleDto(nota);
     }
 
-    public void eliminarNora(Long id){
+    public void eliminarNota(Long id){
         if(notaRepository.existsById(id)){
             notaRepository.deleteById(id);
         }
