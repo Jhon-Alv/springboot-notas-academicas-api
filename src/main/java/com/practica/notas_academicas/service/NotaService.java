@@ -1,8 +1,6 @@
 package com.practica.notas_academicas.service;
 
-import com.practica.notas_academicas.dto.NotaDetalleDto;
-import com.practica.notas_academicas.dto.NotaDto;
-import com.practica.notas_academicas.dto.NotaRegistroDto;
+import com.practica.notas_academicas.dto.*;
 import com.practica.notas_academicas.mapper.NotaMapper;
 import com.practica.notas_academicas.model.Alumno;
 import com.practica.notas_academicas.model.Curso;
@@ -56,17 +54,60 @@ public class NotaService {
         return NotaMapper.toDto(guardada);
     }
 
+    public void eliminarNota(Long id){
+        if(notaRepository.existsById(id)){
+            notaRepository.deleteById(id);
+        }
+        throw new EntityNotFoundException("Nota no encontrada con ID: "+ id);
+    }
+
     public NotaDetalleDto notaDetalleDto(Long id){
         Nota nota = notaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Nota no encontrada con ID: "+ id));
         return NotaMapper.toDetalleDto(nota);
     }
 
-    public void eliminarNota(Long id){
-        if(notaRepository.existsById(id)){
-            notaRepository.deleteById(id);
-        }
-        throw new EntityNotFoundException("Nota no encontrada con ID: "+ id);
+    public List<ReporteAlumnoDto> obtenerListaReporteAlumno(){
+
+        List<Alumno> alumnos = alumnoRepository.findAll();
+
+        return alumnos.stream()
+                .map(alumno -> {
+                    ReporteAlumnoDto dto = ReporteAlumnoDto.builder().build();
+                    dto.setNombreAlumno(alumno.getNombre());
+
+                    List<Nota> notas = alumno.getNotas();
+
+                    double promedio = notas.stream()
+                            .mapToDouble(Nota::getClasificacion)
+                            .average()
+                            .orElse(0.0);
+
+                    dto.setPromedio(promedio);
+
+                    dto.setEstado(promedio >= 11.0 ? "Aprobado" : "Desaprobado");
+
+                    return dto;
+
+                }).toList();
+    }
+
+    public ReporteAlumnoDto obtenerReporteAlumno(Long id){
+
+        Alumno alumno = alumnoRepository.findById(id).orElse(null);
+
+        List<Nota> notas = alumno.getNotas();
+
+        Double promedio = notas.stream()
+                .mapToDouble(Nota::getClasificacion)
+                .average()
+                .orElse(0.0);
+
+        return ReporteAlumnoDto.builder()
+                .nombreAlumno(alumno.getNombre())
+                .promedio(promedio)
+                .estado(promedio >= 11.0 ? "Aprobado" : "Desaprobado")
+                .build();
     }
 
 }

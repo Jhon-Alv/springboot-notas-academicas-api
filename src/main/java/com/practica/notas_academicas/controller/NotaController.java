@@ -3,6 +3,7 @@ package com.practica.notas_academicas.controller;
 import com.practica.notas_academicas.dto.NotaDetalleDto;
 import com.practica.notas_academicas.dto.NotaDto;
 import com.practica.notas_academicas.dto.NotaRegistroDto;
+import com.practica.notas_academicas.dto.ReporteAlumnoDto;
 import com.practica.notas_academicas.service.NotaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,17 @@ public class NotaController {
     public ResponseEntity<NotaDetalleDto> obtenerNotaDetalle(@PathVariable Long id){
         NotaDetalleDto detalleEncontrado = notaService.notaDetalleDto(id);
         return ResponseEntity.ok(detalleEncontrado);
+    }
+
+    @GetMapping("/reporte")
+    public List<ReporteAlumnoDto> listarReportePorAlumno(){
+        return notaService.obtenerListaReporteAlumno();
+    }
+
+    @GetMapping("/reporte/{id}")
+    public ResponseEntity<ReporteAlumnoDto> obtenerReporteAlumno(@PathVariable Long id){
+        ReporteAlumnoDto encontrado = notaService.obtenerReporteAlumno(id);
+        return ResponseEntity.ok(encontrado);
     }
 
 }
