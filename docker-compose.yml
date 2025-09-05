@@ -1,5 +1,19 @@
-
 services:
+  notas-api:
+    build: .
+    container_name: notas-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      notas-mysql-container:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://notas-mysql-container:3306/notas_academicas
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=admin
+    restart: on-failure
+    networks:
+      - backend-net
 
   notas-mysql-container:
     image: mysql:latest
@@ -16,6 +30,11 @@ services:
     volumes:
       - notas_data:/var/lib/mysql
     restart: unless-stopped
+    networks:
+      - backend-net
 
 volumes:
   notas_data:
+
+networks:
+  backend-net:
